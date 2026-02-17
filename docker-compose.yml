@@ -1,0 +1,44 @@
+services:
+  carla_dev:
+    build:
+      context: .
+      dockerfile: Dockerfile.carla
+    image: tms/carla_dev:0.9.16
+    container_name: carla_sim_tms
+    network_mode: "host"
+    runtime: nvidia
+    environment:
+      - DISPLAY=${DISPLAY}
+      - NVIDIA_VISIBLE_DEVICES=all
+    volumes:
+      - /tmp/.X11-unix:/tmp/.X11-unix:rw
+      - ./carla_folder:/workspace/tms:rw
+      - rviz_shared_configs:/workspace/rviz_configs # shared volume for Rviz config files
+    command: /bin/bash CarlaUE4.sh --ros2 -quality-level=Low -nosound
+
+  ros2_dev:
+    build:
+        context: .
+        dockerfile: Dockerfile.ros2
+    image: tms/ros2_dev:humble-desktop
+    container_name: ros2_tms
+    network_mode: "host"
+    runtime: nvidia
+    environment:
+      - DISPLAY=${DISPLAY}
+      - NVIDIA_VISIBLE_DEVICES=all
+      - NVIDIA_DRIVER_CAPABILITIES=all  # IMPORTANT: This enables graphics/OpenGL
+      - XDG_RUNTIME_DIR=/tmp/runtime-root # Fixes the QStandardPaths warning
+      - XAUTHORITY=/root/.Xauthority # Add this
+    volumes:
+      - /tmp/.X11-unix:/tmp/.X11-unix:rw
+      - ~/.Xauthority:/root/.Xauthority:rw # Mount your host's auth file (solve "could not connect to display" error)
+      - ./ros2_folder:/ros2_ws/src/tms:rw
+      - rviz_shared_configs:/ros2_ws/src/rviz_configs # shared volume for Rviz config files
+    depends_on:
+      - carla_dev
+    stdin_open: true
+    tty: true
+
+volumes:
+  rviz_shared_configs: # "virtual drive" for sharing rviz config from Carla's container to ROS2 one
