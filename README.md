@@ -71,17 +71,20 @@ ros2 topic list
 ## 🎮 Hybrid Control Interface
 The `custom_path_test.py` script allows real-time switching between three distinct driving modes:
 
-|Control Mode | Input | Activation |
-| --- | --- |--- |
-| Autonomous | PID Controller | Press 'P' (Keyboard) or Btn 101 (triangle in wheel △) |
-| Manual (Keyboard) | 'WASD' Keys | Press Btn  98 (square in wheel ▢)|
-| Manual (Cockpit) | Fanatec DD Pro | Press 'O' (Keyboard) |
-| --- | --- |--- |
-
 ### Key Bindings:
-* `C`: (Keyboard) / Btn 99 (x in wheel Ⓧ): Toggle Camera (Follow View / Cockpit View).
-* `Q`: Toggle Reverse gear (Keyboard) / Btn 100 (circle in wheel ◯).
-* `I`: Toggle On-Screen Display (HUD) for telemetry.
+|Action | Keyboard Input | Wheel Input |
+| --- | --- |--- |
+| Toggle Camera (Follow View / Cockpit View) | `C` | Btn 99 (x in wheel Ⓧ) |
+| Change to reverse Gear | `Q` | Btn 102 (right flap) |
+| Toggle On-Screen Display (HUD) for telemetry. | `I` |  |
+| Change vehicle randomly | `P` | Btn 100 (circle in wheel ◉) |
+| Auntonomous Driving control | `space` | Btn 101 (triangle in wheel △) |
+| Toggle to manual control (Keyboard)| n.a. | Press Btn  98 (square in wheel ▢) |
+| Toggle to manual control (wheel)| `O` | n.a. |
+| Throttle/brake | `W`, `S` (1, 0) | Right pedal / Left pedal |
+| Steering | `A`, `D` (-0.6, 0.6 degrees) | steering wheel |
+| Quit simulation | `ESC` | n.a. |
+| --- | --- |--- |
 
 ---
 
