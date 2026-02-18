@@ -158,7 +158,7 @@ class SimpleSimulation:
 
     def generate_path(self):
         start = self.vehicle.get_transform().location
-        pts = [carla.Location(x=start.x + i*2, y=start.y + 1*np.sin(i/1.0), z=start.z + 0.2) for i in range(120)]
+        pts = [carla.Location(x=start.x + i*2, y=start.y + 1*np.sin(i/3.0), z=start.z + 0.2) for i in range(120)]
         # Dibujamos una sola vez con mucha duración
         for i in range(len(pts) - 1):
             self.world.debug.draw_line(
