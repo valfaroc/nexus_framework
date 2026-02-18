@@ -2,6 +2,7 @@ import carla
 import pygame
 import numpy as np
 import os
+import random
 from configparser import ConfigParser
 from collections import deque
 
@@ -91,9 +92,41 @@ class SimpleSimulation:
             print("ADVERTENCIA: wheel_config.ini no encontrado. Usando valores por defecto.")
             self._steer_idx, self._throttle_idx, self._brake_idx, self._reverse_idx = 0, 1, 2, 3   
 
+    def vehicle_random_choice(self):
+        # destruimos el vehiculo actual
+        if self.vehicle is not None:
+            self.vehicle.destroy()
+
+        # spawneamos el nuevo vehiculo aleatorio
+        bp = random.choice(self.world.get_blueprint_library().filter('vehicle.*.*'))
+        spawn_point = self.world.get_map().get_spawn_points()[0]
+        self.vehicle = self.world.spawn_actor(bp, spawn_point)
+
+        # detenemos el flujo un momento para evitar errores de buffer
+        self.camera.stop() 
+        
+        # Obtenemos el transform relativo actual según el índice
+        loc, rot = self.camera_transforms[self.camera_index]
+        
+        # Importante: Para cambiar el 'parent', lo más seguro en CARLA es volver a crear 
+        # el sensor o usar un socket. Pero para evitar recrear el objeto:
+        self.camera.destroy() 
+        cam_bp = self.world.get_blueprint_library().find('sensor.camera.rgb')
+        cam_bp.set_attribute('image_size_x', str(self.width))
+        cam_bp.set_attribute('image_size_y', str(self.height))
+        
+        self.camera = self.world.spawn_actor(
+            cam_bp,
+            carla.Transform(loc, rot),
+            attach_to=self.vehicle
+        )
+        
+        # Reiniciamos el listener
+        self.camera.listen(lambda data: self._parse_image(data))
+        
     def setup_actors(self):
         # Vehículo
-        bp = self.world.get_blueprint_library().find('vehicle.tesla.cybertruck')
+        bp = self.world.get_blueprint_library().find('vehicle.tesla.model3')
         spawn_point = self.world.get_map().get_spawn_points()[0]
         self.vehicle = self.world.spawn_actor(bp, spawn_point)
         
@@ -125,7 +158,7 @@ class SimpleSimulation:
 
     def generate_path(self):
         start = self.vehicle.get_transform().location
-        pts = [carla.Location(x=start.x + i*2, y=start.y + 4*np.sin(i/10.0), z=start.z + 0.2) for i in range(120)]
+        pts = [carla.Location(x=start.x + i*2, y=start.y + 1*np.sin(i/1.0), z=start.z + 0.2) for i in range(120)]
         # Dibujamos una sola vez con mucha duración
         for i in range(len(pts) - 1):
             self.world.debug.draw_line(
@@ -236,21 +269,24 @@ class SimpleSimulation:
                 for event in pygame.event.get():
                     if event.type == pygame.QUIT: return
                     if event.type == pygame.KEYDOWN:
-                        if event.key == pygame.K_p: self.automated_mode = not self.automated_mode
+                        if event.key == pygame.K_SPACE: self.automated_mode = not self.automated_mode
                         if event.key == pygame.K_o: self.keyboard_manual_input = False
                         if event.key == pygame.K_q: self.reverse = not self.reverse
                         if event.key == pygame.K_i: self.show_info = not self.show_info
                         if event.key == pygame.K_c: self.next_camera()
+                        if event.key == pygame.K_p: self.vehicle_random_choice()
                         if event.key == pygame.K_ESCAPE: return
                     # Botón del volante para alternar Autopilot (101)
                     if event.type == pygame.JOYBUTTONDOWN:
-                        # triangulo
-                        if event.button == 101: self.automated_mode = not self.automated_mode
-                        # circulo
+                        # solapa derecha - reversa
                         if event.button == self._reverse_idx: self.reverse = not self.reverse
-                        # equis
+                        # triangulo - control autonomo
+                        if event.button == 101: self.automated_mode = not self.automated_mode
+                        # circulo - cambiar vehiculo
+                        if event.button == 100: self.vehicle_random_choice()
+                        # equis - cambiar camara
                         if event.button == 99: self.next_camera()
-                        # cuadrado
+                        # cuadrado - cambiar control al tecaldo
                         if event.button == 98: self.keyboard_manual_input = True
 
                 v_trans = self.vehicle.get_transform()
