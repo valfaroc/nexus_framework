@@ -1,0 +1,23 @@
+[importlinter]
+root_packages =
+    nexus
+    modules
+    simulators
+
+[importlinter:contract:no-outward-deps]
+name = Modules must not import from simulators
+type = forbidden
+source_modules =
+    modules
+forbidden_modules =
+    simulators
+
+[importlinter:contract:core-is-innermost]
+name = Core must not import from modules or simulators
+type = forbidden
+source_modules =
+    nexus.core
+forbidden_modules =
+    modules
+    simulators
+    nexus.cli

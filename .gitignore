@@ -1,4 +1,6 @@
-/.*
+**/.docker
+**/.vscode
 **/__pycache__
 carla_folder/
 ros2_folder/
+.env
