@@ -44,10 +44,8 @@ def test_vehicle_control_steer_out_of_range_raises() -> None:
 
 def test_vehicle_control_is_immutable() -> None:
     cmd = VehicleControl(throttle=0.5)
-    assert cmd.model_fields_set is not None
-    # Frozen models raise ValidationError on direct field assignment.
-    # mypy catches this at type-check time; we verify the frozen config is set:
-    assert cmd.model_config.get("frozen") is True
+    with pytest.raises(ValidationError, match="frozen"):
+        cmd.throttle = 0.9  # type: ignore[misc]
 
 
 def test_vehicle_control_no_imports_from_simulators() -> None:
@@ -72,7 +70,8 @@ def test_vehicle_pose_fields() -> None:
 
 def test_vehicle_pose_is_immutable() -> None:
     pose = VehiclePose(x=0, y=0, z=0, roll=0, pitch=0, yaw=0, timestamp=0)
-    assert pose.model_config.get("frozen") is True
+    with pytest.raises(ValidationError, match="frozen"):
+        pose.x = 99.0  # type: ignore[misc]
 
 
 # --- VehicleConfig ---
