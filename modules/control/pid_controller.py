@@ -30,7 +30,7 @@ class PIDController:
         return float(np.clip(output, self.limits[0], self.limits[1])), error
 
 
-class PIDControlModule(BaseModule):
+class PIDControllerModule(BaseModule):
     name = "control_pid"
 
     def setup(self) -> None:

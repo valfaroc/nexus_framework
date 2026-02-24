@@ -1,6 +1,12 @@
 **/.docker
 **/.vscode
+**/.mypy_cache
+**/.pytest_cache
+**/.import_linter_cache
 **/__pycache__
 carla_folder/
 ros2_folder/
 .env
+__pycache__/
+*.pyc
+*.pyo

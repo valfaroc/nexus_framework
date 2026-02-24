@@ -7,8 +7,8 @@ from nexus.core.base_module import BaseModule
 from nexus.core.types import VehicleControl
 
 
-class HardwareInputModule(BaseModule):
-    name = "hardware_input"
+class HardwareInput(BaseModule):
+    name = "tools_hardware_input"
 
     def setup(self) -> None:
         pygame.joystick.init()

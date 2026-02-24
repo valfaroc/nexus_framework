@@ -6,8 +6,8 @@ import pygame
 from nexus.core.base_module import BaseModule
 
 
-class PygameHUDModule(BaseModule):
-    name = "hud_pygame"
+class PygameHUD(BaseModule):
+    name = "tools_pygame_hud"
 
     def setup(self) -> None:
         pygame.init()

@@ -3,8 +3,8 @@ from typing import Any
 from nexus.core.base_module import BaseModule
 
 
-class CarlaSensorsModule(BaseModule):
-    name = "sensing_carla"
+class CarlaPerceptionModule(BaseModule):
+    name = "perception_carla"
 
     def setup(self) -> None:
         pass

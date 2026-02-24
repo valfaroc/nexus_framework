@@ -4,8 +4,8 @@ import numpy as np
 from nexus.core.base_module import BaseModule
 
 
-class WaypointFollowerModule(BaseModule):
-    name = "planning_waypoint_follower"
+class SinusoidalWaypointPlanner(BaseModule):
+    name = "planning_sinusoidal"
 
     def setup(self) -> None:
         self._path: list[dict[str, float]] = []
