@@ -1,5 +1,5 @@
 from pydantic import BaseModel, Field
-from typing import Optional
+from typing import Optional, Any
 
 
 class VehicleControl(BaseModel):
@@ -38,7 +38,7 @@ class SensorData(BaseModel):
     model_config = {"frozen": True}
     sensor_type: str
     timestamp: float
-    data: dict[str, object]  # type-specific payload
+    data: dict[str, Any]  # type-specific payload
 
 
 class WorldState(BaseModel):
