@@ -5,6 +5,7 @@ project:
 simulator:
   type: mock
 
+# FIX: sensing, hud and hardware input are not modules anymore
 modules:
   sensing: true
   localization: true

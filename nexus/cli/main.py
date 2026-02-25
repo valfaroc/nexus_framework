@@ -8,6 +8,7 @@ import structlog
 logger = structlog.get_logger()
 app = typer.Typer(name="nexus", help="Modular, simulator-agnostic CCAM simulation framework")
 
+# FIX: sensing, hud and hardware input are not modules anymore
 NEXUS_YAML_TEMPLATE = """\
 project:
   name: {name}
@@ -65,6 +66,7 @@ def new(project_name: str) -> None:
         typer.echo(f"❌ Project '{project_name}' already exists at {project_dir}")
         raise typer.Exit(1)
 
+    # FIX: should the modules and extra folders come from nexus.yaml file or they should keep harcoded?
     (project_dir / "modules" / "perception").mkdir(parents=True)
     (project_dir / "modules" / "localization").mkdir(parents=True)
     (project_dir / "modules" / "planning").mkdir(parents=True)
