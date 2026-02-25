@@ -32,6 +32,8 @@ RUN apt-get update && apt-get install -y \
 
 # 4. Install CARLA Python API (must match version 0.9.16)
 RUN pip3 install carla==0.9.16
+RUN pip3 install --upgrade pip && \
+    pip3 install pyyaml pydantic typer jinja2 structlog
 
 # 5. Create workspace
 WORKDIR /ros2_ws

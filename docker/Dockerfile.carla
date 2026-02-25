@@ -56,4 +56,4 @@ RUN cp -r /workspace/PythonAPI/examples/ros2/config /workspace/rviz_configs/ && 
 USER carla
 
 # Entrypoint remains the same as the base image
-ENTRYPOINT ["/bin/bash", "CarlaUE4.sh"]
+ENTRYPOINT ["/bin/bash", "CarlaUE4.sh", "-nosound"]

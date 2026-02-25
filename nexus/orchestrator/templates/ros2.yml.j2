@@ -7,14 +7,17 @@ nexus-ros2:
   environment:
     - DISPLAY=${DISPLAY}
     - ROS_DOMAIN_ID=0
+    - PYTHONPATH=/nexus
   volumes:
     - /tmp/.X11-unix:/tmp/.X11-unix:rw
     - rviz_shared_configs:/root/.rviz2
     - .:/nexus
+  working_dir: /nexus
   depends_on:
     - nexus-sim
   networks:
     - nexus_net
   command: >
     bash -c "source /opt/ros/humble/setup.bash &&
-             python3 -m nexus.cli.main up --inside-container"
+               echo '✅ Nexus ROS2 container ready' &&
+               tail -f /dev/null"

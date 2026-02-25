@@ -47,12 +47,16 @@ class Orchestrator:
         return output_path
 
     def _assemble(self, service_blocks: list[str]) -> str:
-        lines = ["version: '3.8'", "services:"]
+        lines = ["services:"]
         for block in service_blocks:
             for line in block.strip().split("\n"):
                 lines.append(f"  {line}")
         lines.append("")
         lines.append("volumes:")
         lines.append("  rviz_shared_configs:")
+        lines.append("")
+        lines.append("networks:")
+        lines.append("  nexus_net:")
+        lines.append("    driver: bridge")
         lines.append("")
         return "\n".join(lines)
