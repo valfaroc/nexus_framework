@@ -11,6 +11,7 @@ nexus-sim:
     - NVIDIA_DRIVER_CAPABILITIES=all
   volumes:
     - /tmp/.X11-unix:/tmp/.X11-unix:rw
+    - rviz_shared_configs:/workspace/rviz_configs   # needed for sharing config files with nexus-ros2
   ports:
     - "2000-2002:2000-2002"
   networks:
