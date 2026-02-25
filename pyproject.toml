@@ -16,8 +16,8 @@ nexus = "nexus.cli.main:app"
 
 [tool.setuptools.packages.find]
 where = ["."]
-include = ["nexus*"]
-exclude = ["tests*", "archive*"]
+include = ["nexus*", "modules*", "simulators*"]
+exclude = ["tests*", "archive*", "projects*"]
 
 [tool.black]
 line-length = 100

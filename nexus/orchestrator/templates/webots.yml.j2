@@ -1,0 +1,13 @@
+nexus-sim:
+  build:
+    context: .
+    dockerfile: docker/Dockerfile.webots
+  image: nexus/webots:R2023b
+  container_name: nexus_webots
+  environment:
+    - DISPLAY=${DISPLAY}
+  volumes:
+    - /tmp/.X11-unix:/tmp/.X11-unix:rw
+    - ./simulators/webots/worlds:/nexus/worlds:ro
+  networks:
+    - nexus_net

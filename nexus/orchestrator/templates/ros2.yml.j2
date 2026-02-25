@@ -1,0 +1,20 @@
+nexus-ros2:
+  build:
+    context: .
+    dockerfile: docker/Dockerfile.ros2
+  image: nexus/ros2:humble
+  container_name: nexus_ros2
+  environment:
+    - DISPLAY=${DISPLAY}
+    - ROS_DOMAIN_ID=0
+  volumes:
+    - /tmp/.X11-unix:/tmp/.X11-unix:rw
+    - rviz_shared_configs:/root/.rviz2
+    - .:/nexus
+  depends_on:
+    - nexus-sim
+  networks:
+    - nexus_net
+  command: >
+    bash -c "source /opt/ros/humble/setup.bash &&
+             python3 -m nexus.cli.main up --inside-container"

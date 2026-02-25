@@ -1,0 +1,25 @@
+project:
+  name: nexus_dev
+  version: "0.1"
+
+simulator:
+  type: mock
+
+modules:
+  sensing: true
+  localization: true
+  planning:
+    type: sinusoidal
+    config:
+      n_points: 120
+      step_m: 2.0
+  control:
+    type: pid
+    config:
+      longitudinal: {Kp: 0.8, Ki: 0.05, Kd: 0.2, setpoint_kmh: 25}
+      lateral: {Kp: 0.5, Ki: 0.05, Kd: 0.2}
+  hud: true
+  hardware_input:
+    keyboard: true
+    wheel:
+      enabled: false

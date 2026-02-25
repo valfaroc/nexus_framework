@@ -1,0 +1,45 @@
+project:
+  name: my_first_project
+  version: "0.1"
+
+simulator:
+  type: carla        # carla | webots | mock
+  map: Town04
+  host: localhost
+  port: 2000
+
+vehicle:
+  blueprint: vehicle.tesla.cybertruck
+  spawn_index: 0
+
+sensors:
+  - type: camera_rgb
+    width: 1200
+    height: 800
+    position: {x: -5.5, z: 2.8}
+    rotation: {pitch: -15}
+  - type: gnss
+  - type: imu
+
+modules:
+  sensing: true
+  localization: true
+  planning:
+    type: sinusoidal
+    config:
+      n_points: 120
+      step_m: 2.0
+      amplitude: 1.0
+      frequency: 3.0
+  control:
+    type: pid
+    translator: null
+    config:
+      longitudinal: {Kp: 0.8, Ki: 0.05, Kd: 0.2, setpoint_kmh: 25}
+      lateral:      {Kp: 0.5, Ki: 0.05, Kd: 0.2}
+  hud: true
+  hardware_input:
+    keyboard: true
+    wheel:
+      enabled: false
+      config: hardware/wheel_config.ini

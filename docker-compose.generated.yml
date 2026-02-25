@@ -1,0 +1,42 @@
+version: '3.8'
+services:
+  nexus-sim:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.carla
+    image: nexus/carla:0.9.16
+    container_name: nexus_carla
+    runtime: nvidia
+    environment:
+      - DISPLAY=${DISPLAY}
+      - NVIDIA_VISIBLE_DEVICES=all
+      - NVIDIA_DRIVER_CAPABILITIES=all
+    volumes:
+      - /tmp/.X11-unix:/tmp/.X11-unix:rw
+    ports:
+      - "2000-2002:2000-2002"
+    networks:
+      - nexus_net
+  nexus-ros2:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.ros2
+    image: nexus/ros2:humble
+    container_name: nexus_ros2
+    environment:
+      - DISPLAY=${DISPLAY}
+      - ROS_DOMAIN_ID=0
+    volumes:
+      - /tmp/.X11-unix:/tmp/.X11-unix:rw
+      - rviz_shared_configs:/root/.rviz2
+      - .:/nexus
+    depends_on:
+      - nexus-sim
+    networks:
+      - nexus_net
+    command: >
+      bash -c "source /opt/ros/humble/setup.bash &&
+               python3 -m nexus.cli.main up --inside-container"
+
+volumes:
+  rviz_shared_configs:
