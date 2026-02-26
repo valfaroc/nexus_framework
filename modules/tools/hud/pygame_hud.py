@@ -10,6 +10,7 @@ class PygameHUD(BaseModule):
     name = "tools_pygame_hud"
 
     def setup(self) -> None:
+        self._available = False
         try:
             pygame.init()
             w: int = int(self.config.get("width",  1200))

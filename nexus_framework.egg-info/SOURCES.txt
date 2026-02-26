@@ -15,6 +15,9 @@ modules/tools/hardware_input/hardware_input.py
 modules/tools/hud/__init__.py
 modules/tools/hud/pygame_hud.py
 nexus/__init__.py
+nexus/bridge/__init__.py
+nexus/bridge/loop.py
+nexus/bridge/node.py
 nexus/cli/__init__.py
 nexus/cli/main.py
 nexus/cli/commands/__init__.py
@@ -41,6 +44,8 @@ simulators/carla/adapter.py
 simulators/carla/translator.py
 simulators/mock/__init__.py
 simulators/webots/__init__.py
+simulators/webots/adapter.py
+simulators/webots/translator.py
 tests/test_base_module.py
 tests/test_base_simulator.py
 tests/test_carla_translator.py
