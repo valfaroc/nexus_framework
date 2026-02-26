@@ -1,0 +1,111 @@
+#VRML_SIM R2023b utf8
+
+WorldInfo {
+  info [
+    "Nexus Framework — simple road test world"
+  ]
+  title "Simple Road"
+  basicTimeStep 32
+}
+
+Viewpoint {
+  orientation 0 0 1 0
+  position 0 -10 5
+}
+
+Background {
+  skyColor [0.4 0.6 0.9]
+}
+
+DirectionalLight {
+  direction 0.5 -0.5 -1
+  intensity 1
+}
+
+Solid {
+  children [
+    Shape {
+      appearance Appearance {
+        material Material { diffuseColor 0.3 0.3 0.3 }
+      }
+      geometry Plane {
+        size 200 200
+      }
+    }
+  ]
+  name "ground"
+  boundingObject Plane {
+    size 200 200
+  }
+}
+
+Robot {
+  translation 0 0 0.1
+  children [
+    Solid {
+      children [
+        Shape {
+          appearance Appearance {
+            material Material { diffuseColor 0.2 0.4 0.8 }
+          }
+          geometry Box { size 2.5 1.2 0.6 }
+        }
+      ]
+      name "body"
+    }
+
+    HingeJoint {
+      jointParameters HingeJointParameters { axis 0 1 0 anchor -0.9 0.6 -0.1 }
+      device [ RotationalMotor { name "left front wheel" maxVelocity 30 } ]
+      endPoint Solid {
+        children [ Shape { geometry Cylinder { radius 0.3 height 0.2 } } ]
+        name "lfw"
+        boundingObject Cylinder { radius 0.3 height 0.2 }
+        physics Physics { density -1 mass 1.5 }
+      }
+    }
+
+    HingeJoint {
+      jointParameters HingeJointParameters { axis 0 1 0 anchor -0.9 -0.6 -0.1 }
+      device [ RotationalMotor { name "right front wheel" maxVelocity 30 } ]
+      endPoint Solid {
+        children [ Shape { geometry Cylinder { radius 0.3 height 0.2 } } ]
+        name "rfw"
+        boundingObject Cylinder { radius 0.3 height 0.2 }
+        physics Physics { density -1 mass 1.5 }
+      }
+    }
+
+    HingeJoint {
+      jointParameters HingeJointParameters { axis 0 1 0 anchor 0.9 0.6 -0.1 }
+      device [ RotationalMotor { name "left rear wheel" maxVelocity 30 } ]
+      endPoint Solid {
+        children [ Shape { geometry Cylinder { radius 0.3 height 0.2 } } ]
+        name "lrw"
+        boundingObject Cylinder { radius 0.3 height 0.2 }
+        physics Physics { density -1 mass 1.5 }
+      }
+    }
+
+    HingeJoint {
+      jointParameters HingeJointParameters { axis 0 1 0 anchor 0.9 -0.6 -0.1 }
+      device [ RotationalMotor { name "right rear wheel" maxVelocity 30 } ]
+      endPoint Solid {
+        children [ Shape { geometry Cylinder { radius 0.3 height 0.2 } } ]
+        name "rrw"
+        boundingObject Cylinder { radius 0.3 height 0.2 }
+        physics Physics { density -1 mass 1.5 }
+      }
+    }
+
+    GPS {
+      name "gps"
+      type "satellite"
+    }
+
+  ]
+  name "nexus_vehicle"
+  boundingObject Box { size 2.5 1.2 0.6 }
+  physics Physics { density -1 mass 800 }
+  controller "<extern>"
+}

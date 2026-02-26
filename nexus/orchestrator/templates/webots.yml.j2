@@ -6,8 +6,14 @@ nexus-sim:
   container_name: nexus_webots
   environment:
     - DISPLAY=${DISPLAY}
+    - WEBOTS_HOME=/usr/local/webots
   volumes:
     - /tmp/.X11-unix:/tmp/.X11-unix:rw
     - ./simulators/webots/worlds:/nexus/worlds:ro
+    - .:/nexus
   networks:
     - nexus_net
+  command: >
+    bash -c "Xvfb :99 -screen 0 1280x1024x24 &
+             export DISPLAY=:99 &&
+             webots --mode=fast --batch /nexus/worlds/simple_road.wbt"

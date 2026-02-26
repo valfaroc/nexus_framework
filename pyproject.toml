@@ -26,6 +26,7 @@ target-version = ["py310"]
 [tool.mypy]
 strict = true
 ignore_missing_imports = true
+exclude = ["archive/"]
 disallow_untyped_decorators = false
 plugins = ["pydantic.mypy"]
 

@@ -38,8 +38,8 @@ services:
       - nexus_net
     command: >
       bash -c "source /opt/ros/humble/setup.bash &&
-                 echo '✅ Nexus ROS2 container ready' &&
-                 tail -f /dev/null"
+               echo '✅ Nexus ROS2 container ready' &&
+               tail -f /dev/null"
 
 volumes:
   rviz_shared_configs:

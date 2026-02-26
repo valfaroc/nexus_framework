@@ -9,6 +9,7 @@ logger = structlog.get_logger()
 app = typer.Typer(name="nexus", help="Modular, simulator-agnostic CCAM simulation framework")
 
 # FIX: sensing, hud and hardware input are not modules anymore
+# FIX: looks like this template should be loaded from nexus.yaml and not being hardcoded
 NEXUS_YAML_TEMPLATE = """\
 project:
   name: {name}

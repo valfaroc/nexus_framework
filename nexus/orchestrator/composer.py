@@ -52,9 +52,14 @@ class Orchestrator:
             for line in block.strip().split("\n"):
                 lines.append(f"  {line}")
         lines.append("")
-        lines.append("volumes:")
-        lines.append("  rviz_shared_configs:")
-        lines.append("")
+
+        # rviz_shared_configs only needed for CARLA — it shares RViz config files
+        # from the CARLA container into the ROS2 container
+        if self.config.simulator.type == "carla":
+            lines.append("volumes:")
+            lines.append("  rviz_shared_configs:")
+            lines.append("")
+
         lines.append("networks:")
         lines.append("  nexus_net:")
         lines.append("    driver: bridge")

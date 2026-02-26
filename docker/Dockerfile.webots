@@ -14,9 +14,6 @@ RUN wget -q https://github.com/cyberbotics/webots/releases/download/R2023b/webot
 
 ENV PYTHONPATH=${WEBOTS_HOME}/lib/controller/python:$PYTHONPATH
 
-RUN pip3 install --upgrade pip && \
-    pip3 install pydantic typer pyyaml jinja2 structlog numpy
+RUN pip3 install pydantic typer pyyaml jinja2 structlog numpy
 
 WORKDIR /nexus
-
-CMD ["bash"]

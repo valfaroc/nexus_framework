@@ -10,7 +10,7 @@ nexus-ros2:
     - PYTHONPATH=/nexus
   volumes:
     - /tmp/.X11-unix:/tmp/.X11-unix:rw
-    - rviz_shared_configs:/root/.rviz2
+    {% if config.simulator.type == "carla" %}- rviz_shared_configs:/root/.rviz2{% endif %}
     - .:/nexus
   working_dir: /nexus
   depends_on:
@@ -19,5 +19,5 @@ nexus-ros2:
     - nexus_net
   command: >
     bash -c "source /opt/ros/humble/setup.bash &&
-               echo '✅ Nexus ROS2 container ready' &&
-               tail -f /dev/null"
+             echo '✅ Nexus ROS2 container ready' &&
+             tail -f /dev/null"
