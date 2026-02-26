@@ -10,19 +10,31 @@ class PygameHUD(BaseModule):
     name = "tools_pygame_hud"
 
     def setup(self) -> None:
-        pygame.init()
-        w: int = int(self.config.get("width", 1200))
-        h: int = int(self.config.get("height", 800))
-        self.display = pygame.display.set_mode((w, h))
-        pygame.display.set_caption("Nexus HUD")
-        self.font = pygame.font.SysFont("mono", 15)
-        self.surface: pygame.Surface | None = None
-        hist = int(self.config.get("history_len", 200))
-        self.lon_history: deque[float] = deque([0.0] * hist, maxlen=hist)
-        self.lat_history: deque[float] = deque([0.0] * hist, maxlen=hist)
-        self._width = w
+        try:
+            pygame.init()
+            w: int = int(self.config.get("width",  1200))
+            h: int = int(self.config.get("height", 800))
+            self.display = pygame.display.set_mode((w, h))
+            pygame.display.set_caption("Nexus HUD")
+            self.font    = pygame.font.SysFont("mono", 15)
+            self.surface: pygame.Surface | None = None
+            hist = int(self.config.get("history_len", 200))
+            self.lon_history: deque[float] = deque([0.0] * hist, maxlen=hist)
+            self.lat_history: deque[float] = deque([0.0] * hist, maxlen=hist)
+            self._width = w
+            self._available = True
+        except Exception as e:
+            import structlog
+            structlog.get_logger().warning(
+                "HUD unavailable — pygame failed to initialise",
+                error=str(e)
+            )
+            self._available = False
 
     def process(self, msg: Any) -> None:
+        if not getattr(self, "_available", False):
+            return
+
         # Camera frame
         if hasattr(msg, "sensor_type") and msg.sensor_type == "camera_rgb":
             arr: Any = msg.data["array"]

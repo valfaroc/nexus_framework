@@ -3,7 +3,7 @@ project:
   version: "0.1"
 
 simulator:
-  type: webots
+  type: mock
 
 # FIX: sensing, hud and hardware input are not modules anymore
 modules:
@@ -17,8 +17,8 @@ modules:
   control:
     type: pid
     config:
-      longitudinal: {Kp: 0.8, Ki: 0.05, Kd: 0.2, setpoint_kmh: 25}
-      lateral: {Kp: 0.5, Ki: 0.05, Kd: 0.2}
+      longitudinal: { Kp: 0.8, Ki: 0.05, Kd: 0.2, setpoint_kmh: 25 }
+      lateral: { Kp: 0.5, Ki: 0.05, Kd: 0.2 }
   hud: true
   hardware_input:
     keyboard: true

@@ -1,4 +1,3 @@
-# nexus/cli/main.py
 from __future__ import annotations
 import subprocess
 from pathlib import Path
@@ -82,6 +81,58 @@ def new(project_name: str) -> None:
     typer.echo(f"    Edit {nexus_yaml} then run:")
     typer.echo(f"    cd {project_dir} && nexus up")
 
+@app.command()
+def run(
+    config: str = typer.Option("nexus.yaml", help="Path to nexus.yaml"),
+) -> None:
+    """Start the simulation loop (runs inside the ROS2 container)."""
+    from nexus.config.loader import load_config
+    from nexus.core.registry import ModuleRegistry
+    from nexus.bridge.node import NexusNode
+    from nexus.bridge.loop import SimulationLoop
+
+    cfg = load_config(config)
+    registry = ModuleRegistry(cfg)
+    registry.discover()
+
+    # Load the correct adapter based on simulator type
+    adapter = _load_adapter(cfg)
+
+    node = NexusNode()
+    loop = SimulationLoop(cfg, adapter, registry, node)
+
+    typer.echo(f"🚀  Starting simulation loop — {cfg.simulator.type} @ {loop.hz}Hz")
+    node.start()
+    adapter.connect(host=cfg.simulator.host, port=cfg.simulator.port)
+    ego_id = adapter.spawn_ego(
+        __import__("nexus.core.types", fromlist=["VehicleConfig"]).VehicleConfig(
+            **cfg.vehicle.model_dump()
+        )
+    )
+    typer.echo(f"🚗  Ego spawned: {ego_id}")
+    loop.setup()
+    loop.run()
+
+
+def _load_adapter(cfg: "NexusConfig") -> "SimulatorInterface":  # type: ignore[name-defined]
+    from nexus.core.base_simulator import SimulatorInterface
+    from nexus.config.schema import NexusConfig
+
+    sim_map: dict[str, str] = {
+        "carla":  "simulators.carla.adapter:CarlaAdapter",
+        "webots": "simulators.webots.adapter:WebotsAdapter",
+    }
+    sim_type = cfg.simulator.type
+    if sim_type not in sim_map and sim_type != "mock":
+        raise ValueError(f"No adapter registered for simulator type '{sim_type}'")
+
+    if sim_type == "mock":
+        return _MockAdapter()  # type: ignore[return-value]
+
+    import importlib
+    module_path, class_name = sim_map[sim_type].rsplit(":", 1)
+    cls = getattr(importlib.import_module(module_path), class_name)
+    return cls(dict(cfg.simulator.config))  # type: ignore[return-value]
 
 @app.command()
 def up(
@@ -137,6 +188,65 @@ def validate(
     typer.echo(f"    Simulator:  {cfg.simulator.type}")
     typer.echo(f"    Modules:    {', '.join(registry.modules.keys())}")
 
+
+class _MockAdapter:
+    """Minimal adapter for local testing without a real simulator."""
+    from nexus.core.types import (
+        WorldState, VehiclePose, VehicleVelocity, VehicleConfig, VehicleControl, SensorData
+    )
+
+    _actors: dict[str, str] = {}
+    _tick_count: int = 0
+
+    def connect(self, host: str = "localhost", port: int = 0) -> None:
+        import structlog
+        structlog.get_logger().info("MockAdapter connected")
+
+    def disconnect(self) -> None:
+        pass
+
+    def spawn_ego(self, config: VehicleConfig) -> str:  # type: ignore[override]
+        self._actors["mock_ego"] = "mock_ego"
+        return "mock_ego"
+
+    def spawn_ego(self, config: Any) -> str:  # type: ignore[override]
+        self._actors["mock_ego"] = "mock_ego"
+        return "mock_ego"
+
+    def destroy_actor(self, actor_id: str) -> None:
+        pass
+
+    def apply_control(self, actor_id: str, control: VehicleControl) -> None:  # type: ignore[override]
+        pass
+
+    def tick(self) -> WorldState:  # type: ignore[override]
+        from nexus.core.types import WorldState, VehiclePose, VehicleVelocity
+        self._tick_count += 1
+        t = float(self._tick_count) / 20.0
+        return WorldState(
+            tick=self._tick_count,
+            timestamp=t,
+            ego_pose=VehiclePose(
+                x=float(self._tick_count) * 0.5,
+                y=0.0, z=0.0,
+                roll=0.0, pitch=0.0, yaw=0.0,
+                timestamp=t,
+            ),
+            ego_velocity=VehicleVelocity(
+                vx=10.0, vy=0.0, vz=0.0,
+                speed_kmh=36.0,
+                timestamp=t,
+            ),
+        )
+
+    def get_spawn_points(self) -> list[dict[str, object]]:
+        return [{"x": 0.0, "y": 0.0, "z": 0.0}]
+
+    def setup_sensor(self, sensor_type: str, config: dict[str, object], parent_id: str) -> str:
+        return f"mock_{sensor_type}"
+
+    def get_sensor_data(self, sensor_id: str) -> None:
+        return None
 
 if __name__ == "__main__":
     app()
