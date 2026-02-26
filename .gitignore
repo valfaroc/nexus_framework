@@ -10,3 +10,4 @@ ros2_folder/
 __pycache__/
 *.pyc
 *.pyo
+docker-compose.*
