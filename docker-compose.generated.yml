@@ -39,7 +39,7 @@ services:
     command: >
       bash -c "source /opt/ros/humble/setup.bash &&
                echo '✅ Nexus ROS2 container ready' &&
-               tail -f /dev/null"
+               python3 -m nexus.cli.main run --config /nexus/nexus.yaml"
 
 volumes:
   rviz_shared_configs:

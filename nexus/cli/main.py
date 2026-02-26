@@ -184,6 +184,7 @@ def validate(
     registry = ModuleRegistry(cfg)
     registry.discover()
     typer.echo(f"✅  nexus.yaml is valid")
+    typer.echo(f"    Config:     {config}")
     typer.echo(f"    Project:    {cfg.project.name}")
     typer.echo(f"    Simulator:  {cfg.simulator.type}")
     typer.echo(f"    Modules:    {', '.join(registry.modules.keys())}")
