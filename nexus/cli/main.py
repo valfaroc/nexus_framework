@@ -114,25 +114,25 @@ def run(
     loop.run()
 
 
-def _load_adapter(cfg: "NexusConfig") -> "SimulatorInterface":  # type: ignore[name-defined]
-    from nexus.core.base_simulator import SimulatorInterface
-    from nexus.config.schema import NexusConfig
+def _load_adapter(cfg: Any) -> Any:
+    sim_type = cfg.simulator.type
+
+    # MockAdapter for webots in ROS2 container — Webots connection is handled
+    # by the extern controller running inside the Webots container itself.
+    # The ROS2 container orchestrates modules; the Webots container drives the robot.
+    if sim_type in ("mock", "webots"):
+        return _MockAdapter()
 
     sim_map: dict[str, str] = {
-        "carla":  "simulators.carla.adapter:CarlaAdapter",
-        "webots": "simulators.webots.adapter:WebotsAdapter",
+        "carla": "simulators.carla.adapter:CarlaAdapter",
     }
-    sim_type = cfg.simulator.type
-    if sim_type not in sim_map and sim_type != "mock":
+    if sim_type not in sim_map:
         raise ValueError(f"No adapter registered for simulator type '{sim_type}'")
-
-    if sim_type == "mock":
-        return _MockAdapter()  # type: ignore[return-value]
 
     import importlib
     module_path, class_name = sim_map[sim_type].rsplit(":", 1)
     cls = getattr(importlib.import_module(module_path), class_name)
-    return cls(dict(cfg.simulator.config))  # type: ignore[return-value]
+    return cls(dict(cfg.simulator.config))
 
 @app.command()
 def up(config: str = typer.Option("nexus.yaml")) -> None:

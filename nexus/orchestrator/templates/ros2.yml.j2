@@ -1,24 +1,23 @@
-nexus-ros2:
+nexus-sim:
   build:
     context: .
-    dockerfile: docker/Dockerfile.ros2
-  image: nexus/ros2:humble
-  container_name: nexus_ros2
+    dockerfile: docker/Dockerfile.webots
+  image: nexus/webots:R2023b
+  container_name: nexus_webots
   environment:
     - DISPLAY=${DISPLAY}
+    - WEBOTS_HOME=/usr/local/webots
     - ROS_DOMAIN_ID=0
-    - PYTHONPATH=/nexus
-    - NEXUS_CONFIG={{ config_path | default('/nexus/nexus.yaml') }}
   volumes:
     - /tmp/.X11-unix:/tmp/.X11-unix:rw
-    {% if config.simulator.type == "carla" %}- rviz_shared_configs:/root/.rviz2{% endif %}
+    - ./simulators/webots/worlds:/nexus/worlds:ro
+    - ./simulators/webots:/nexus/simulators/webots:ro
     - .:/nexus
-  working_dir: /nexus
-  depends_on:
-    - nexus-sim
   networks:
     - nexus_net
   command: >
-    bash -c "source /opt/ros/humble/setup.bash &&
-             echo '✅ Nexus ROS2 container ready' &&
-             python3 -m nexus.cli.main run --config ${NEXUS_CONFIG}"
+    bash -c "Xvfb :99 -screen 0 1280x1024x24 &
+             export DISPLAY=:99 &&
+             webots --mode=fast --batch /nexus/worlds/simple_road.wbt &
+             sleep 3 &&
+             python3 /nexus/simulators/webots/extern_controller.py"
