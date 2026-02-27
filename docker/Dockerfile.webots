@@ -1,19 +1,16 @@
-FROM ubuntu:22.04
-
-ENV DEBIAN_FRONTEND=noninteractive
-ENV WEBOTS_HOME=/usr/local/webots
+FROM cyberbotics/webots.cloud:R2023b-ubuntu22.04
 
 RUN apt-get update && apt-get install -y \
-    wget python3.10 python3-pip \
-    libglu1-mesa libxi-dev libxmu-dev libgl1-mesa-glx xvfb \
+    python3-pip \
+    xvfb \
     && rm -rf /var/lib/apt/lists/*
 
-RUN wget -q https://github.com/cyberbotics/webots/releases/download/R2023b/webots_2023b_amd64.deb && \
-    apt-get install -y ./webots_2023b_amd64.deb && \
-    rm webots_2023b_amd64.deb
-
+ENV WEBOTS_HOME=/usr/local/webots
 ENV PYTHONPATH=${WEBOTS_HOME}/lib/controller/python:$PYTHONPATH
 
-RUN pip3 install pydantic typer pyyaml jinja2 structlog numpy
+RUN pip3 install --upgrade pip && \
+    pip3 install pydantic typer pyyaml jinja2 structlog numpy
 
 WORKDIR /nexus
+
+CMD ["bash"]

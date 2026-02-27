@@ -1,22 +1,44 @@
-FROM ubuntu:22.04
+# 1. Use osrf ROS2 Humble desktop image
+FROM osrf/ros:humble-desktop
 
-ENV DEBIAN_FRONTEND=noninteractive
-ENV WEBOTS_HOME=/usr/local/webots
+# 2. Set the Environmental Variable as requested
+ENV FASTRTPS_DEFAULT_PROFILES_FILE=/ros2_ws/src/rviz_configs/config/fastrtps-profile.xml
 
+# 3. Install system dependencies for GUI and CARLA API
 RUN apt-get update && apt-get install -y \
-    wget python3.10 python3-pip \
-    libglu1-mesa libxi-dev libxmu-dev libgl1-mesa-glx xvfb \
+    python3-pip \
+    python3-colcon-common-extensions \
+    python3-rosdep \
+    ros-humble-ackermann-msgs \
+    ros-humble-nav-msgs \
+    x11-apps \
+    mesa-utils \
+    libglvnd0 \
+    libgl1 \
+    libglx0 \
+    libegl1 \
+    vim \
+    libxcb-xinerama0 \
+    libxkbcommon-x11-0 \
+    libxcb-icccm4 \
+    libxcb-image0 \
+    libxcb-keysyms1 \
+    libxcb-randr0 \
+    libxcb-render-util0 \
+    libxcb-xfixes0 \
+    libxcb-cursor0 \
     && rm -rf /var/lib/apt/lists/*
 
-RUN wget -q https://github.com/cyberbotics/webots/releases/download/R2023b/webots_2023b_amd64.deb && \
-    apt-get install -y ./webots_2023b_amd64.deb && \
-    rm webots_2023b_amd64.deb
-
-ENV PYTHONPATH=${WEBOTS_HOME}/lib/controller/python:$PYTHONPATH
-
+# 4. Install CARLA Python API and framework dependencies
+RUN pip3 install carla==0.9.16
 RUN pip3 install --upgrade pip && \
-    pip3 install pydantic typer pyyaml jinja2 structlog numpy
+    pip3 install pyyaml pydantic typer jinja2 structlog
 
-WORKDIR /nexus
+# 5. Create workspace
+WORKDIR /ros2_ws
+RUN mkdir -p src
+
+# 6. Set up the entrypoint to source ROS2 automatically
+RUN echo "source /opt/ros/humble/setup.bash" >> ~/.bashrc
 
 CMD ["bash"]
