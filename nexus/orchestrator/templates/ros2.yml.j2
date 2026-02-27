@@ -8,6 +8,7 @@ nexus-ros2:
     - DISPLAY=${DISPLAY}
     - ROS_DOMAIN_ID=0
     - PYTHONPATH=/nexus
+    - WEBOTS_SERVER=nexus_webots:1234
   volumes:
     - /tmp/.X11-unix:/tmp/.X11-unix:rw
     {% if config.simulator.type == "carla" %}- rviz_shared_configs:/root/.rviz2{% endif %}
@@ -17,7 +18,4 @@ nexus-ros2:
     - nexus-sim
   networks:
     - nexus_net
-  command: >
-    bash -c "source /opt/ros/humble/setup.bash &&
-             echo '✅ Nexus ROS2 container ready — run: nexus run --config <your_project>/nexus.yaml' &&
-             tail -f /dev/null"
+  command: bash -c "source /opt/ros/humble/setup.bash && echo '✅ Nexus ROS2 container ready' && sleep 5 && python3 /nexus/simulators/webots/extern_controller.py & sleep 3 && python3 -m nexus.cli.main run --config {{ config_path }}"

@@ -35,11 +35,14 @@ def main() -> None:
     gps = robot.getDevice("gps")
     gps.enable(timestep)
 
-    # Initialize LiDAR if present
+    ## Initialize LiDAR if present
     lidar = robot.getDevice("lidar")
     if lidar:
         lidar.enable(timestep)
         lidar.enablePointCloud()
+        print("✅ LiDAR enabled")
+    else:
+        print("⚠️  LiDAR device not found — check device name in .wbt file")
 
     # ROS2 setup
     import rclpy
