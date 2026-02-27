@@ -18,32 +18,20 @@ class Orchestrator:
             autoescape=select_autoescape([]),
         )
 
-    def generate_compose(self, output_path: str = "docker-compose.generated.yml") -> str:
+    def generate_compose(self, output_path: str = "docker-compose.generated.yml",
+                         config_path: str = "nexus.yaml") -> str:
         sim_type = self.config.simulator.type
         template_name = f"{sim_type}.yml.j2"
-
-        # Check template exists, fall back to carla if not found
-        template_path = TEMPLATES_DIR / template_name
-        if not template_path.exists():
-            logger.warning(
-                "No template found for simulator, falling back to carla",
-                simulator=sim_type,
-            )
+        if not (TEMPLATES_DIR / template_name).exists():
             template_name = "carla.yml.j2"
-
-        sim_content = self.env.get_template(template_name).render(config=self.config)
-        ros2_content = self.env.get_template("ros2.yml.j2").render(config=self.config)
-
+        sim_content  = self.env.get_template(template_name).render(
+            config=self.config)
+        ros2_content = self.env.get_template("ros2.yml.j2").render(
+            config=self.config, config_path=f"/nexus/{config_path}")
         compose = self._assemble([sim_content, ros2_content])
-
         with open(output_path, "w") as f:
             f.write(compose)
-
-        logger.info(
-            "docker-compose generated",
-            path=output_path,
-            simulator=sim_type,
-        )
+        logger.info("docker-compose generated", path=output_path, simulator=sim_type)
         return output_path
 
     def _assemble(self, service_blocks: list[str]) -> str:

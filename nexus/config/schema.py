@@ -40,6 +40,7 @@ class ModulesConfig(BaseModel):
     control: ControlConfig = Field(default_factory=ControlConfig)
     hud: bool = True
     hardware_input: HardwareInputConfig = Field(default_factory=HardwareInputConfig)
+    custom_modules: dict[str, str] = Field(default_factory=dict)
 
 
 class SimulatorConfig(BaseModel):

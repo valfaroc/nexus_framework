@@ -8,6 +8,7 @@ nexus-ros2:
     - DISPLAY=${DISPLAY}
     - ROS_DOMAIN_ID=0
     - PYTHONPATH=/nexus
+    - NEXUS_CONFIG={{ config_path | default('/nexus/nexus.yaml') }}
   volumes:
     - /tmp/.X11-unix:/tmp/.X11-unix:rw
     {% if config.simulator.type == "carla" %}- rviz_shared_configs:/root/.rviz2{% endif %}
@@ -20,4 +21,4 @@ nexus-ros2:
   command: >
     bash -c "source /opt/ros/humble/setup.bash &&
              echo '✅ Nexus ROS2 container ready' &&
-             python3 -m nexus.cli.main run --config /nexus/nexus.yaml"
+             python3 -m nexus.cli.main run --config ${NEXUS_CONFIG}"

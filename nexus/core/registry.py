@@ -69,6 +69,11 @@ class ModuleRegistry:
         if hw.keyboard or hw.wheel.enabled:
             self._register("tools_hardware_input", hw.model_dump())
 
+        # Load custom modules declared in nexus.yaml
+        custom = getattr(self.config, "custom_modules", {}) or {}
+        for key, dotted_path in custom.items():
+            self._register_custom(key, dotted_path, {})
+
         logger.info("Discovery complete", modules=list(self.modules.keys()))
 
     def _register(self, key: str, config: dict[str, Any]) -> None:
@@ -88,6 +93,11 @@ class ModuleRegistry:
         cls = _import_class(BUILTIN_TRANSLATORS[translator_name])
         self.translators[module_key] = cls(config)
         logger.info("Translator registered", module=module_key, translator=translator_name)
+
+    def _register_custom(self, key: str, dotted_path: str, config: dict[str, Any]) -> None:
+        cls = _import_class(dotted_path)
+        self.modules[key] = cls(config)
+        logger.info("Custom module registered", module=key)
 
     def setup_all(self) -> None:
         for name, module in self.modules.items():

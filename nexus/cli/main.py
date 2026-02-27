@@ -135,19 +135,12 @@ def _load_adapter(cfg: "NexusConfig") -> "SimulatorInterface":  # type: ignore[n
     return cls(dict(cfg.simulator.config))  # type: ignore[return-value]
 
 @app.command()
-def up(
-    config: str = typer.Option("nexus.yaml", help="Path to nexus.yaml"),
-) -> None:
-    """Launch all simulation services defined in nexus.yaml."""
+def up(config: str = typer.Option("nexus.yaml")) -> None:
     from nexus.config.loader import load_config
     from nexus.orchestrator.composer import Orchestrator
-
     cfg = load_config(config)
-    typer.echo(
-        f"🔗  Nexus — starting '{cfg.project.name}' " f"with simulator: {cfg.simulator.type}"
-    )
-    orch = Orchestrator(cfg)
-    compose_path = orch.generate_compose()
+    typer.echo(f"🔗  Nexus — starting '{cfg.project.name}' with simulator: {cfg.simulator.type}")
+    compose_path = Orchestrator(cfg).generate_compose(config_path=config)
     typer.echo(f"📄  Generated {compose_path}")
     subprocess.run(
         ["docker", "compose", "-f", compose_path, "up", "--build"],

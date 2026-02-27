@@ -1,10 +1,7 @@
-# 1. Use osrf ROS2 Humble desktop image
 FROM osrf/ros:humble-desktop
 
-# 2. Set the Environmental Variable as requested
 ENV FASTRTPS_DEFAULT_PROFILES_FILE=/ros2_ws/src/rviz_configs/config/fastrtps-profile.xml
 
-# 3. Install system dependencies for GUI and CARLA API
 RUN apt-get update && apt-get install -y \
     python3-pip \
     python3-colcon-common-extensions \
@@ -13,32 +10,17 @@ RUN apt-get update && apt-get install -y \
     ros-humble-nav-msgs \
     x11-apps \
     mesa-utils \
-    libglvnd0 \
-    libgl1 \
-    libglx0 \
-    libegl1 \
-    vim \
-    libxcb-xinerama0 \
-    libxkbcommon-x11-0 \
-    libxcb-icccm4 \
-    libxcb-image0 \
-    libxcb-keysyms1 \
-    libxcb-randr0 \
-    libxcb-render-util0 \
-    libxcb-xfixes0 \
-    libxcb-cursor0 \
+    libglvnd0 libgl1 libglx0 libegl1 vim \
+    libxcb-xinerama0 libxkbcommon-x11-0 libxcb-icccm4 \
+    libxcb-image0 libxcb-keysyms1 libxcb-randr0 \
+    libxcb-render-util0 libxcb-xfixes0 libxcb-cursor0 \
     && rm -rf /var/lib/apt/lists/*
 
-# 4. Install CARLA Python API and framework dependencies
-RUN pip3 install carla==0.9.16
-RUN pip3 install --upgrade pip && \
-    pip3 install pyyaml pydantic typer jinja2 structlog
-
-# 5. Create workspace
 WORKDIR /ros2_ws
-RUN mkdir -p src
+COPY requirements/ros2.txt .
+RUN pip3 install --upgrade pip && pip3 install -r ros2.txt
 
-# 6. Set up the entrypoint to source ROS2 automatically
+RUN mkdir -p src
 RUN echo "source /opt/ros/humble/setup.bash" >> ~/.bashrc
 
 CMD ["bash"]

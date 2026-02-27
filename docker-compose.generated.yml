@@ -2,21 +2,22 @@ services:
   nexus-sim:
     build:
       context: .
-      dockerfile: docker/Dockerfile.carla
-    image: nexus/carla:0.9.16
-    container_name: nexus_carla
-    runtime: nvidia
+      dockerfile: docker/Dockerfile.webots
+    image: nexus/webots:R2023b
+    container_name: nexus_webots
     environment:
       - DISPLAY=${DISPLAY}
-      - NVIDIA_VISIBLE_DEVICES=all
-      - NVIDIA_DRIVER_CAPABILITIES=all
+      - WEBOTS_HOME=/usr/local/webots
     volumes:
       - /tmp/.X11-unix:/tmp/.X11-unix:rw
-      - rviz_shared_configs:/workspace/rviz_configs   # needed for sharing config files with nexus-ros2
-    ports:
-      - "2000-2002:2000-2002"
+      - ./simulators/webots/worlds:/nexus/worlds:ro
+      - .:/nexus
     networks:
       - nexus_net
+    command: >
+      bash -c "Xvfb :99 -screen 0 1280x1024x24 &
+               export DISPLAY=:99 &&
+               webots --mode=fast --batch /nexus/worlds/simple_road.wbt"
   nexus-ros2:
     build:
       context: .
@@ -29,7 +30,7 @@ services:
       - PYTHONPATH=/nexus
     volumes:
       - /tmp/.X11-unix:/tmp/.X11-unix:rw
-      - rviz_shared_configs:/root/.rviz2
+      
       - .:/nexus
     working_dir: /nexus
     depends_on:
@@ -40,9 +41,6 @@ services:
       bash -c "source /opt/ros/humble/setup.bash &&
                echo '✅ Nexus ROS2 container ready' &&
                python3 -m nexus.cli.main run --config /nexus/nexus.yaml"
-
-volumes:
-  rviz_shared_configs:
 
 networks:
   nexus_net:

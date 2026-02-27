@@ -8,3 +8,5 @@ Requires-Dist: typer>=0.9
 Requires-Dist: pyyaml>=6.0
 Requires-Dist: jinja2>=3.1
 Requires-Dist: structlog>=24.0
+Requires-Dist: numpy>=1.24
+Requires-Dist: pygame>=2.6

@@ -1,16 +1,14 @@
 FROM cyberbotics/webots.cloud:R2023b-ubuntu22.04
 
 RUN apt-get update && apt-get install -y \
-    python3-pip \
-    xvfb \
+    python3-pip xvfb \
     && rm -rf /var/lib/apt/lists/*
 
 ENV WEBOTS_HOME=/usr/local/webots
 ENV PYTHONPATH=${WEBOTS_HOME}/lib/controller/python:$PYTHONPATH
 
-RUN pip3 install --upgrade pip && \
-    pip3 install pydantic typer pyyaml jinja2 structlog numpy
-
 WORKDIR /nexus
+COPY requirements/webots.txt .
+RUN pip3 install --upgrade pip && pip3 install -r webots.txt
 
 CMD ["bash"]

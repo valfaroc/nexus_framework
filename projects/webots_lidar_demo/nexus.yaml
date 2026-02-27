@@ -1,0 +1,42 @@
+project:
+  name: webots_lidar_demo
+  version: "0.1"
+
+simulator:
+  type: webots
+  config:
+    hz: 20.0
+    max_speed_ms: 5.0 # slow — indoor demo world
+    motors:
+      - "left front wheel"
+      - "right front wheel"
+      - "left rear wheel"
+      - "right rear wheel"
+
+vehicle:
+  blueprint: default # ignored by Webots — defined in world file
+  spawn_index: 0
+
+modules:
+  sensing: false
+  localization: true # reuse reference VehicleStateModule
+  planning:
+    type: sinusoidal
+    config:
+      n_points: 80
+      step_m: 1.0
+      amplitude: 0.8
+      frequency: 4.0
+  control:
+    type: lateral_pid
+    config:
+      lateral: { Kp: 1.2, Ki: 0.0, Kd: 0.3 }
+  hud: false # no pygame needed
+  hardware_input:
+    keyboard: false
+    wheel:
+      enabled: false
+
+custom_modules:
+  control_lateral_pid: "projects.webots_lidar_demo.modules.control.lateral_pid:LateralPIDController"
+  perception_lidar: "projects.webots_lidar_demo.modules.perception.lidar:LidarModule"
