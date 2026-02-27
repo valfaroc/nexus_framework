@@ -13,7 +13,6 @@ RUN apt-get update && apt-get install -y \
        > /etc/apt/sources.list.d/ros2.list \
     && apt-get update && apt-get install -y \
        ros-humble-ros-base \
-       python3-rclpy \
     && rm -rf /var/lib/apt/lists/*
 
 ENV WEBOTS_HOME=/usr/local/webots
