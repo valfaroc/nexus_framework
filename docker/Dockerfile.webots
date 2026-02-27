@@ -25,4 +25,9 @@ RUN pip3 install --upgrade pip && pip3 install -r webots.txt
 
 RUN echo "source /opt/ros/humble/setup.bash" >> ~/.bashrc
 
+# Disable Webots startup dialogs
+RUN mkdir -p /root/.config/Cyberbotics && \
+    echo '[General]\ntelemetry=false\ncheck_for_updates=false\nstartup_mode=minimize' \
+    > /root/.config/Cyberbotics/Webots.conf
+
 CMD ["bash"]
