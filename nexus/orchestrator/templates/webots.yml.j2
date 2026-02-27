@@ -7,13 +7,18 @@ nexus-sim:
   environment:
     - DISPLAY=${DISPLAY}
     - WEBOTS_HOME=/usr/local/webots
+    - ROS_DOMAIN_ID=0
+    - XAUTHORITY=/root/.Xauthority
   volumes:
     - /tmp/.X11-unix:/tmp/.X11-unix:rw
+    - ${HOME}/.Xauthority:/root/.Xauthority:ro
     - ./simulators/webots/worlds:/nexus/worlds:ro
     - .:/nexus
   networks:
     - nexus_net
   command: >
-    bash -c "Xvfb :99 -screen 0 1280x1024x24 &
-             export DISPLAY=:99 &&
-             webots --mode=fast --batch /nexus/worlds/simple_road.wbt"
+    bash -c "source /opt/ros/humble/setup.bash &&
+             webots /nexus/worlds/simple_road.wbt &
+             sleep 5 &&
+             echo '✅ Webots ready' &&
+             python3 /nexus/simulators/webots/extern_controller.py"

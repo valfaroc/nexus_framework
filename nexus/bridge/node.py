@@ -67,18 +67,21 @@ class NexusNode:
                 logger.info("Publisher created", topic=topic.name, module=module.name)
 
     def publish(self, topic: str, msg: Any) -> None:
-        # Always notify the loop cache — works with or without ROS2
+        # Always notify the loop cache
         if self._loop_callback:
             self._loop_callback(topic, msg)
 
         if not self._ros2_available:
             return
 
-        import json
         from std_msgs.msg import String
+        import json
+
+        # Create publisher on first use if it doesn't exist yet
         if topic not in self._publishers:
-            logger.warning("No publisher for topic", topic=topic)
-            return
+            self._publishers[topic] = self._node.create_publisher(String, topic, 10)
+            logger.info("Publisher created (lazy)", topic=topic)
+
         ros_msg = String()
         ros_msg.data = json.dumps(self._serialise(msg))
         self._publishers[topic].publish(ros_msg)

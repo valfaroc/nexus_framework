@@ -136,6 +136,7 @@ def _load_adapter(cfg: Any) -> Any:
 
 @app.command()
 def up(config: str = typer.Option("nexus.yaml")) -> None:
+    """Launch simulator and ROS2 containers."""
     from nexus.config.loader import load_config
     from nexus.orchestrator.composer import Orchestrator
     cfg = load_config(config)
@@ -143,9 +144,17 @@ def up(config: str = typer.Option("nexus.yaml")) -> None:
     compose_path = Orchestrator(cfg).generate_compose(config_path=config)
     typer.echo(f"📄  Generated {compose_path}")
     subprocess.run(
-        ["docker", "compose", "-f", compose_path, "up", "--build"],
+        ["docker", "compose", "-f", compose_path, "up", "--build", "--detach"],
         check=True,
     )
+    typer.echo(f"")
+    typer.echo(f"✅  Containers running.")
+    typer.echo(f"")
+    typer.echo(f"    Start the simulation loop locally:")
+    typer.echo(f"    nexus run --config {config}")
+    typer.echo(f"")
+    typer.echo(f"    Stop containers when done:")
+    typer.echo(f"    nexus down --config {config}")
 
 
 @app.command()

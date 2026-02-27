@@ -8,16 +8,20 @@ services:
     environment:
       - DISPLAY=${DISPLAY}
       - WEBOTS_HOME=/usr/local/webots
+      - ROS_DOMAIN_ID=0
     volumes:
       - /tmp/.X11-unix:/tmp/.X11-unix:rw
       - ./simulators/webots/worlds:/nexus/worlds:ro
+      - ./simulators/webots:/nexus/simulators/webots:ro
       - .:/nexus
     networks:
       - nexus_net
     command: >
       bash -c "Xvfb :99 -screen 0 1280x1024x24 &
                export DISPLAY=:99 &&
-               webots --mode=fast --batch /nexus/worlds/simple_road.wbt"
+               webots --mode=fast --batch /nexus/worlds/simple_road.wbt &
+               sleep 3 &&
+               python3 /nexus/simulators/webots/extern_controller.py"
   nexus-ros2:
     build:
       context: .
