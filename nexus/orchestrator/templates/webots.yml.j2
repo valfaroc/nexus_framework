@@ -9,6 +9,7 @@ nexus-sim:
     - WEBOTS_HOME=/usr/local/webots
     - ROS_DOMAIN_ID=0
     - XAUTHORITY=/root/.Xauthority
+    - WEBOTS_DISABLE_SAVE_PERSPECTIVE_ON_CLOSE=1
   volumes:
     - /tmp/.X11-unix:/tmp/.X11-unix:rw
     - ${HOME}/.Xauthority:/root/.Xauthority:ro
@@ -18,7 +19,10 @@ nexus-sim:
     - nexus_net
   command: >
     bash -c "source /opt/ros/humble/setup.bash &&
-             webots /nexus/worlds/simple_road.wbt &
-             sleep 5 &&
-             echo '✅ Webots ready' &&
+             webots --no-sandbox --stdout --stderr
+                    --batch /nexus/worlds/simple_road.wbt &
+             WEBOTS_PID=$$!
+             echo 'Waiting for Webots to load...' &&
+             sleep 8 &&
+             echo '✅ Webots ready, starting controller' &&
              python3 /nexus/simulators/webots/extern_controller.py"

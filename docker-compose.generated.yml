@@ -9,18 +9,23 @@ services:
       - DISPLAY=${DISPLAY}
       - WEBOTS_HOME=/usr/local/webots
       - ROS_DOMAIN_ID=0
+      - XAUTHORITY=/root/.Xauthority
+      - WEBOTS_DISABLE_SAVE_PERSPECTIVE_ON_CLOSE=1
     volumes:
       - /tmp/.X11-unix:/tmp/.X11-unix:rw
+      - ${HOME}/.Xauthority:/root/.Xauthority:ro
       - ./simulators/webots/worlds:/nexus/worlds:ro
-      - ./simulators/webots:/nexus/simulators/webots:ro
       - .:/nexus
     networks:
       - nexus_net
     command: >
-      bash -c "Xvfb :99 -screen 0 1280x1024x24 &
-               export DISPLAY=:99 &&
-               webots --mode=fast --batch /nexus/worlds/simple_road.wbt &
-               sleep 3 &&
+      bash -c "source /opt/ros/humble/setup.bash &&
+               webots --no-sandbox --stdout --stderr
+                      --batch /nexus/worlds/simple_road.wbt &
+               WEBOTS_PID=$$!
+               echo 'Waiting for Webots to load...' &&
+               sleep 8 &&
+               echo '✅ Webots ready, starting controller' &&
                python3 /nexus/simulators/webots/extern_controller.py"
   nexus-ros2:
     build:
@@ -43,8 +48,8 @@ services:
       - nexus_net
     command: >
       bash -c "source /opt/ros/humble/setup.bash &&
-               echo '✅ Nexus ROS2 container ready' &&
-               python3 -m nexus.cli.main run --config /nexus/projects/webots_lidar_demo/nexus.yaml"
+               echo '✅ Nexus ROS2 container ready — run: nexus run --config <your_project>/nexus.yaml' &&
+               tail -f /dev/null"
 
 networks:
   nexus_net:

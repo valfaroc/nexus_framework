@@ -150,10 +150,15 @@ def up(config: str = typer.Option("nexus.yaml")) -> None:
     typer.echo(f"")
     typer.echo(f"✅  Containers running.")
     typer.echo(f"")
-    typer.echo(f"    Start the simulation loop locally:")
+    typer.echo(f"    ── Option A: run loop locally (no ROS2 topics, fast iteration) ──")
     typer.echo(f"    nexus run --config {config}")
     typer.echo(f"")
-    typer.echo(f"    Stop containers when done:")
+    typer.echo(f"    ── Option B: run loop in container (full ROS2 topics) ──")
+    typer.echo(f"    docker exec -it nexus_ros2 bash -c \\")
+    typer.echo(f"      'source /opt/ros/humble/setup.bash && \\")
+    typer.echo(f"       python3 -m nexus.cli.main run --config /nexus/{config}'")
+    typer.echo(f"")
+    typer.echo(f"    ── Stop when done ──")
     typer.echo(f"    nexus down --config {config}")
 
 
