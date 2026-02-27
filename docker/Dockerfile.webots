@@ -1,6 +1,5 @@
 FROM cyberbotics/webots.cloud:R2023b-ubuntu22.04
 
-# Install ROS2 Humble so the extern controller can publish to ROS2 topics
 RUN apt-get update && apt-get install -y \
     python3-pip \
     xvfb \
@@ -25,9 +24,9 @@ RUN pip3 install --upgrade pip && pip3 install -r webots.txt
 
 RUN echo "source /opt/ros/humble/setup.bash" >> ~/.bashrc
 
-# Disable Webots startup dialogs
+# Disable Webots startup dialogs and version check popup
 RUN mkdir -p /root/.config/Cyberbotics && \
-    echo '[General]\ntelemetry=false\ncheck_for_updates=false\nstartup_mode=minimize' \
+    printf '[General]\ntelemetry=false\ncheck_for_updates=false\nstartup_mode=minimize\n' \
     > /root/.config/Cyberbotics/Webots.conf
 
 CMD ["bash"]
