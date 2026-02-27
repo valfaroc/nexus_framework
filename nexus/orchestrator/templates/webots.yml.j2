@@ -16,4 +16,4 @@ nexus-sim:
     - .:/nexus
   networks:
     - nexus_net
-  command: bash -c "source /opt/ros/humble/setup.bash && echo '[nexus_webots] Starting Webots...' && webots /nexus/worlds/simple_road.wbt & sleep 10 && echo '[nexus_webots] Starting extern controller' && python3 /nexus/simulators/webots/extern_controller.py"
+  command: bash -c "source /opt/ros/humble/setup.bash && export PYTHONPATH=/opt/ros/humble/lib/python3.10/site-packages:$PYTHONPATH && echo '[nexus_webots] Starting Webots...' && webots /nexus/worlds/simple_road.wbt & sleep 10 && echo '[nexus_webots] Starting extern controller' && python3 /nexus/simulators/webots/extern_controller.py"
