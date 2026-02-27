@@ -16,11 +16,9 @@ RUN apt-get update && apt-get install -y \
     && rm -rf /var/lib/apt/lists/*
 
 ENV WEBOTS_HOME=/usr/local/webots
-# Software rendering — no GPU required inside Docker
 ENV LIBGL_ALWAYS_SOFTWARE=1
 ENV GALLIUM_DRIVER=llvmpipe
-# ROS2 Python path
-ENV PYTHONPATH=/opt/ros/humble/lib/python3.10/site-packages:${WEBOTS_HOME}/lib/controller/python:$PYTHONPATH
+ENV PYTHONPATH=/opt/ros/humble/local/lib/python3.10/dist-packages:${WEBOTS_HOME}/lib/controller/python
 
 WORKDIR /nexus
 COPY requirements/webots.txt .
@@ -32,7 +30,7 @@ RUN mkdir -p /root/.config/Cyberbotics && \
     printf '[General]\ntelemetry=false\ncheck_for_updates=false\n' \
     > /root/.config/Cyberbotics/Webots.conf
 
-# Verify rclpy is importable at build time — fails fast if path is wrong
-RUN python3 -c "import sys; sys.path.insert(0, '/opt/ros/humble/lib/python3.10/site-packages'); import rclpy; print('rclpy OK')"
+# Verify rclpy is importable at build time
+RUN python3 -c "import rclpy; print('rclpy OK')"
 
 CMD ["bash"]
