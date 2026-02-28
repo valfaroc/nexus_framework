@@ -21,4 +21,4 @@ nexus-sim:
     - "1234:1234"
   networks:
     - nexus_net
-  command: bash -c "source /opt/ros/humble/setup.bash && ros2 launch /nexus/simulators/webots/robot_launch.py"
+  command: /bin/bash -c ". /opt/ros/humble/setup.bash && ros2 launch /nexus/simulators/webots/robot_launch.py"
