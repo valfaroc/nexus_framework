@@ -17,8 +17,5 @@ nexus-sim:
     - ./simulators/webots/worlds:/nexus/worlds
     - ./simulators/webots:/nexus/driver
     - .:/nexus
-  ports:
-    - "1234:1234"
-  networks:
-    - nexus_net
+  network_mode: host
   command: /bin/bash -c ". /opt/ros/humble/setup.bash && ros2 launch /nexus/simulators/webots/robot_launch.py"
