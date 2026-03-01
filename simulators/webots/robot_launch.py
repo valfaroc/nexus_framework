@@ -1,5 +1,4 @@
 import os
-import pathlib
 
 import launch
 from launch import LaunchDescription
@@ -22,7 +21,7 @@ def generate_launch_description():
         world=WORLD,
         gui=True,
         mode="realtime",
-        ros2_supervisor=True,
+        ros2_supervisor=False,
     )
 
     driver = Node(
@@ -44,7 +43,7 @@ def generate_launch_description():
     return LaunchDescription(
         [
             webots,
-            launch.actions.TimerAction(period=8.0, actions=[driver]),
+            launch.actions.TimerAction(period=10.0, actions=[driver]),
             launch.actions.RegisterEventHandler(
                 event_handler=launch.event_handlers.OnProcessExit(
                     target_action=webots,
