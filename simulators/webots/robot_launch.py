@@ -13,8 +13,6 @@ ROBOT = "nexus_vehicle"
 
 
 def generate_launch_description():
-    robot_description = pathlib.Path(URDF).read_text()
-
     webots = WebotsLauncher(
         world=WORLD,
         gui=True,
@@ -30,13 +28,20 @@ def generate_launch_description():
             "WEBOTS_CONTROLLER_URL": controller_url_prefix() + ROBOT,
             "PYTHONPATH": "/nexus/driver:/nexus:" + os.environ.get("PYTHONPATH", ""),
         },
-        parameters=[{"robot_description": robot_description}],
+        # Pass file path instead of string content — fixes deprecation warning
+        parameters=[
+            {
+                "robot_description": URDF,
+                "use_sim_time": True,
+            }
+        ],
     )
 
     return LaunchDescription(
         [
             webots,
-            driver,
+            # Wait for Webots to be ready before starting driver
+            launch.actions.TimerAction(period=8.0, actions=[driver]),
             launch.actions.RegisterEventHandler(
                 event_handler=launch.event_handlers.OnProcessExit(
                     target_action=webots,
