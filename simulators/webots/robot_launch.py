@@ -11,6 +11,11 @@ WORLD = "/nexus/worlds/simple_road.wbt"
 URDF = "/nexus/driver/nexus_robot.urdf"
 ROBOT = "nexus_vehicle"
 
+ROS_PYTHON_PATH = (
+    "/opt/ros/humble/local/lib/python3.10/dist-packages:"
+    "/opt/ros/humble/lib/python3.10/site-packages"
+)
+
 
 def generate_launch_description():
     webots = WebotsLauncher(
@@ -26,9 +31,8 @@ def generate_launch_description():
         output="screen",
         additional_env={
             "WEBOTS_CONTROLLER_URL": controller_url_prefix() + ROBOT,
-            "PYTHONPATH": "/nexus/driver:/nexus:" + os.environ.get("PYTHONPATH", ""),
+            "PYTHONPATH": f"/nexus/driver:/nexus:{ROS_PYTHON_PATH}:{os.environ.get('PYTHONPATH', '')}",
         },
-        # Pass file path instead of string content — fixes deprecation warning
         parameters=[
             {
                 "robot_description": URDF,
@@ -40,7 +44,6 @@ def generate_launch_description():
     return LaunchDescription(
         [
             webots,
-            # Wait for Webots to be ready before starting driver
             launch.actions.TimerAction(period=8.0, actions=[driver]),
             launch.actions.RegisterEventHandler(
                 event_handler=launch.event_handlers.OnProcessExit(
