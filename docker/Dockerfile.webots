@@ -1,15 +1,13 @@
-FROM cyberbotics/webots.cloud:R2023b-ubuntu22.04
+FROM cyberbotics/webots.cloud:R2025a-ubuntu22.04
 
-# Step 1: base tools + ROS2 repo
+# cache-bust: 2026-02-28c
 RUN apt-get update && apt-get install -y \
     python3-pip curl gnupg lsb-release \
+    && echo "deb [arch=amd64 signed-by=/usr/share/keyrings/ros-archive-keyring.gpg] http://packages.ros.org/ros2/ubuntu jammy main" \
+    > /etc/apt/sources.list.d/ros2.list \
     && curl -sSL https://raw.githubusercontent.com/ros/rosdistro/master/ros.key \
     -o /usr/share/keyrings/ros-archive-keyring.gpg \
-    && echo "deb [arch=amd64 signed-by=/usr/share/keyrings/ros-archive-keyring.gpg] http://packages.ros.org/ros2/ubuntu jammy main" \
-    > /etc/apt/sources.list.d/ros2.list
-
-# Step 2: install ROS2 driver + CLI
-RUN apt-get update && apt-get install -y \
+    && apt-get update && apt-get install -y \
     ros-humble-webots-ros2-driver \
     ros-humble-ros2cli \
     ros-humble-ros2launch \
