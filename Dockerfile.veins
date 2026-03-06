@@ -1,0 +1,54 @@
+#Notes: Esto solo compila en release, porque la imagen de omnetpp no da la compilación en debug
+
+FROM omnetpp/omnetpp:u18.04-5.6.2
+
+USER root
+
+WORKDIR /workspace
+
+
+# 1. Install system dependencies and build tools for Python 3.10
+RUN apt-get update && apt-get install -y \
+    wget \
+    libssl-dev \
+    libsqlite3-dev \
+    vim \
+    && rm -rf /var/lib/apt/lists/*
+
+# 2. Download and install Python 3.10.19
+RUN wget -c https://www.python.org/ftp/python/3.10.19/Python-3.10.19.tar.xz && \
+    tar -Jxf Python-3.10.19.tar.xz && \
+    cd Python-3.10.19 && \
+    ./configure --enable-optimizations && \
+    make -j$(nproc) && \
+    make altinstall && \
+    cd .. && rm -rf Python-3.10.19*
+
+# 3. Set Python 3.10 as the default 'python3'
+RUN update-alternatives --install /usr/bin/python3 python3 /usr/local/bin/python3.10 110
+
+RUN apt-get update && apt-get install -y \
+    python3-pip
+
+# Instalar dependencias y configuraciones
+RUN python3 -m pip install grpcio && \
+    python3 -m pip install grpcio-tools && \
+    python3 -m pip install conan==1.54.0 &&\
+    python3 -m pip install carla 
+    
+RUN conan profile new default --detect && conan profile update settings.compiler.libcxx=libstdc++11 default
+
+# Clone veins dependencies and Carla integration
+RUN  git clone --branch veins-5.2 https://github.com/sommer/veins.git  &&\
+    cd veins &&\
+    ./configure && \ 
+    make MODE=release -j$(nproc) && \
+    #make MODE=debug -j$(nproc) && \
+    cd .. &&\
+    git clone https://github.com/veins/veins_carla.git &&\
+    cd veins_carla &&\
+    ./configure &&\
+    make MODE=release -j$(nproc)
+    #make MODE=debug -j$(nproc)
+
+WORKDIR /workspace/veins_carla

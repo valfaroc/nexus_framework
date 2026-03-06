@@ -40,5 +40,23 @@ services:
     stdin_open: true
     tty: true
 
+  veins_dev:
+    build:
+      context: .
+      dockerfile: Dockerfile.veins
+    image: tms/veins
+    container_name: veins_tms
+    network_mode: "host"
+    runtime: nvidia # No necesario
+    environment:
+      - DISPLAY=${DISPLAY}
+    volumes:
+      - /tmp/.X11-unix:/tmp/.X11-unix:rw
+      - ./veins_carla_src:/workspace/veins_carla:rw  # Carpeta local con el repo
+    depends_on:
+      - carla_dev
+    stdin_open: true
+    tty: true
+
 volumes:
   rviz_shared_configs: # "virtual drive" for sharing rviz config from Carla's container to ROS2 one
